@@ -19,14 +19,23 @@ let users = [];
 // the HTML document is parsed before this script runs.
 
 // TODO: Select the user table body element with id="user-table-body".
+const userTableBody = document.getElementById('user-table-body');
 
 // TODO: Select the "Add User" form with id="add-user-form".
+const addUserForm = document.getElementById('add-user-form');
+
 
 // TODO: Select the "Change Password" form with id="password-form".
+const changePasswordForm = document.getElementById('password-form');
+
 
 // TODO: Select the search input field with id="search-input".
+const searchInput = document.getElementById('search-input');
+
 
 // TODO: Select all table header (th) elements inside the thead of id="user-table".
+const tableHeaders = document.querySelectorAll('#user-table thead th');
+
 
 // --- Functions ---
 
@@ -43,6 +52,39 @@ let users = [];
  */
 function createUserRow(user) {
   // ... your implementation here ...
+  const row = document.createElement('tr');
+
+  const nameCell = document.createElement('td');
+  nameCell.textContent = user.name;
+  row.appendChild(nameCell);
+
+  const emailCell = document.createElement('td')
+  emailCell.textContent = user.email;
+  row.appendChild(emailCell);
+
+  const adminCell = document.createElement('td')
+  adminCell.textContent = user.is_admin===1 ? 'Yes' : 'No';
+  row.appendChild(adminCell);
+
+  const actionsCell = document.createElement('td');
+  const ediBtn = document.createElement('button');
+  ediBtn.textContent = 'Edit';
+  ediBtn.className = 'edit-btn';
+  ediBtn.setAttribute('data-id',user.id);
+  actionsCell.appendChild(ediBtn);
+
+  const deleteBtn = document.createElement('button')
+  deleteBtn.textContent='Delete';
+  deleteBtn.className ='delete-btn';
+  deleteBtn.setAttribute('data-id',user.id);
+  actionsCell.appendChild(deleteBtn);
+
+  row.appendChild(actionsCell);
+
+  return row;
+
+  
+
 }
 
 /**
@@ -55,6 +97,12 @@ function createUserRow(user) {
  */
 function renderTable(userArray) {
   // ... your implementation here ...
+  userTableBody.innerHTML='';
+
+  for(const user of userArray){
+    const row = createUserRow(user);
+    userTableBody.appendChild(row);
+  }
 }
 
 /**
@@ -74,7 +122,52 @@ function renderTable(userArray) {
  */
 function handleChangePassword(event) {
   // ... your implementation here ...
+  const currentPassword = document.getElementById('current-password').value;
+  const newPassword = document.getElementById('new-password').value;
+  const confirmPassword = document.getElementById('confirm-password').value;
+
+  if(newPassword !== confirmPassword){
+    alert('Passwords do not match.');
+    return;
+  }
+  
+  if(newPassword.length < 8){
+    alert('Password must be at least 8 characters.');
+    return;
+  }
+
+  const adminId = localStorage.getItem('userId');
+  if(!adminId){
+    alert('You must be logged in as admin.');
+    return;
+  }
+
+  fetch('../api/index.php?action=change_password',{
+    method: 'POST',
+    headers: {'Content-Type':'application/json'},
+    body: JSON.stringify({
+      id: parseInt(adminId),
+      current_password: currentPassword,
+      new_password: newPassword
+    })
+  })
+  .then(response => response.json())
+  .then(data => {
+    if(data.success){
+      alert('Password updated successfully!');
+      document.getElementById('current-password').value = '';
+      document.getElementById('new-password').value = '';
+      document.getElementById('confirm-password').value = '';
+    }else{
+      alert(data.message || 'Failed to update password.');
+    }
+  })
+  .catch(error => {
+    console.error('Error:', error);
+    alert('An error occurred. Please try again.')
+  });
 }
+
 
 /**
  * TODO: Implement the handleAddUser function.
@@ -94,7 +187,54 @@ function handleChangePassword(event) {
  */
 function handleAddUser(event) {
   // ... your implementation here ...
+  event.preventDefault();
+
+  const name = document.getElementById('user-name').value;
+  const email = document.getElementById('user-email').value;
+  const password = document.getElementById('default-password').value;
+  const isAdmin = document.getElementById('is-admin').value;
+
+  if(!name || !email || !password){
+    alert('Please fill out all required fields.');
+    return;
+  }
+  if(password.length<8){
+    alert('Password must be at least 8 characters.');
+    return;
+  }
+
+  fetch('../api/index.php',{
+    method: 'POST',
+    headers: {'Content-Type':'application/json'},
+    body:JSON.stringify({
+      name:name,
+      email:email,
+      password:password,
+      is_admin: parseInt(isAdmin)
+    })
+  })
+  .then(response=>response.json())
+  .then(data=>{
+    if(data.success || response.status ===201){
+      alert('User added successfully!');
+
+      document.getElementById('user-name').value='';
+      document.getElementById('user-email').value='';
+      document.getElementById('default-password').value='';
+      document.getElementById('is-admin').value='0';
+
+      loadUsersAndInitialize();
+    }else{
+      alert(data.message || 'Failed to add user');
+    }
+  })
+
+  .catch(error=>{
+    console.error('Error:',error);
+    alert('An error occurred. Please try again.');
+  });
 }
+
 
 /**
  * TODO: Implement the handleTableClick function.
@@ -113,6 +253,69 @@ function handleAddUser(event) {
  */
 function handleTableClick(event) {
   // ... your implementation here ...
+  const target = event.target;
+
+  if(target.classList.contains('delete-btn')){
+    const userId = target.getAttribute('data-id');
+
+    if(confirm('Are you sure you want to delete this user?')){
+      fetch(`../api/index.php?id=${userId}`,{
+        method:'DELETE'
+      })
+      .then(response=>response.json())
+      .then(data=>{
+        if(data.success){
+          users=users.filter(user=>user.id !=userId);
+          renderTable(users);
+          alert('User deleted successfully!');
+        }else{
+          alert(data.message || 'Failed to delete user.');
+        }
+      })
+      .catch(error=>{
+        console.error('Error:',error);
+        alert('An error occurred. Please try again.')
+      });
+    }
+  }
+
+  if(target.classList.contains('edit-btn')){
+    const userId = target.getAttribute('data-id');
+    const user = users.find(u=>u.id==userId);
+
+    if(user){
+      const newName = prompt('Enter new name:', user.name);
+      const newEmail = prompt('Enter new email:', user.email);
+      const newAdmin = confirm('Is this user an admin? Click OK for Yes, Cancel for No');
+
+      if(newName && newEmail){
+        fetch('../api/index.php',{
+          method:'PUT',
+          headers:{'Content-Type':'application/json'},
+          body:JSON.stringify({
+            id:parseInt(userId),
+            name:newName,
+            email:newEmail,
+            is_admin:newAdmin ? 1:0
+          })
+        })
+
+        .then(response=>response.json())
+        .then(data=>{
+          if(data.success){
+            alert('User updated successfully!');
+            loadUsersAndInitialize();
+          }else{
+            alert(data.message || 'Failed to update user.')
+          }
+        })
+        .catch(error=>{
+          console.error('Error',error);
+          alert('An error occurred');
+        });
+      }
+    }
+  }
 }
 
 /**
@@ -128,6 +331,16 @@ function handleTableClick(event) {
  */
 function handleSearch(event) {
   // ... your implementation here ...
+  const searchTerm = searchInput.value.toLowerCase();
+  if(searchTerm===''){
+    renderTable(users);
+  }else{
+    const filteredUsers = users.filter(user=>
+      user.name.toLowerCase().includes(searchTerm)||
+      user.email.toLowerCase().includes(searchTerm)
+    );
+    renderTable(filteredUsers);
+  }
 }
 
 /**
@@ -149,6 +362,36 @@ function handleSearch(event) {
  */
 function handleSort(event) {
   // ... your implementation here ...
+  const th = event.currentTarget;
+  const columnIndex = th.cellIndex;
+  const currentDir = th.getAttribute('data-sort-dir')||'asc';
+  const newDir = currentDir==='asc'?'desc':'asc';
+
+  let property;
+  switch(columnIndex){
+    case 0: property = 'name'; break;
+    case 1: property = 'email'; break;
+    case 2: property = 'is_admin'; break;
+    default: return;
+  }
+
+  users.sort((a,b) =>{
+    let aVal = a[property];
+    let bVal = b[property];
+
+    if(property === 'is_admin'){
+      aVal=aVal===1?1:0;
+      bVal=bVal===1?1:0;
+      return newDir === 'asc' ? aVal-bVal:bVal-aVal;
+    }else{
+      return newDir === 'asc'
+      ?String(aVal).localeCompare(String(bVal)) : String(bVal).localeCompare(String(aVal));
+    }
+  });
+  
+  th.setAttribute('data-sort-dir',newDir);
+
+  renderTable(users);
 }
 
 /**
@@ -170,6 +413,44 @@ function handleSort(event) {
  */
 async function loadUsersAndInitialize() {
   // ... your implementation here ...
+  try{
+    const response = await fetch('../api/index.php');
+    if(!response.ok){
+      throw new Error('Failed to fetch users');
+    }
+
+    const data = await response.json();
+    if(data.success && data.data){
+      users=data.data;
+      renderTable(users);
+    }else{
+      console.error('Invalid API response:',data);
+      alert('Failed to load users. Please refresh the page.');
+    }
+
+    if(changePasswordForm){
+      changePasswordForm.addEventListener('submit',handleChangePassword);
+    }
+    if(addUserForm){
+      addUserForm.addEventListener('submit',handleAddUser);
+    }
+    if(userTableBody){
+      userTableBody.addEventListener('click',handleTableClick);
+    }
+    if(searchInput){
+      searchInput.addEventListener('input',handleSearch);
+    }
+    if(tableHeaders){
+      tableHeaders.forEach(th=>{
+        th.addEventListener('click',handleSort);
+      });
+    }
+
+
+  }catch(error){
+    console.error('Error loading users:',error);
+    alert('Failed to load users. Please check your connection and refresh the page.');
+  }
 }
 
 // --- Initial Page Load ---
