@@ -157,27 +157,23 @@ function handleChangePassword(event) {
     })
   })
   .then(response => response.json())
-  .then(data => {
-    if(data.success){
+ .then(data => {
+   if(data.success){
       alert('Password updated successfully!');
-      document.getElementById('current-password').value = '';
-      document.getElementById('new-password').value = '';
-      document.getElementById('confirm-password').value = '';
-    }else{
+   } else {
       alert(data.message || 'Failed to update password.');
-    }
-
-    currentInput.value = '';
-    newInput.value = '';
-    confirmInput.value = '';
+   }
+   document.getElementById('current-password').value = '';
+   document.getElementById('new-password').value = '';
+   document.getElementById('confirm-password').value = '';
   })
-  .catch(error => {
-    console.error('Error:', error);
-    alert('An error occurred. Please try again.')
 
-    currentInput.value = '';
-    newInput.value = '';
-    confirmInput.value = '';
+  .catch(error => {
+   console.error('Error:', error);
+   alert('An error occurred. Please try again.');
+   document.getElementById('current-password').value = '';
+   document.getElementById('new-password').value = '';
+   document.getElementById('confirm-password').value = '';
   });
 }
 
@@ -377,40 +373,40 @@ function handleSort(event) {
   // ... your implementation here ...
   const th = event.currentTarget;
   const columnIndex = th.cellIndex;
-  const currentDir = th.getAttribute('data-sort-dir')||'asc';
-  const newDir = currentDir==='asc'?'desc':'asc';
+  const currentDir = th.getAttribute('data-sort-dir') || 'asc';
+  const newDir = currentDir === 'asc' ? 'desc' : 'asc';
 
   let property;
-  switch(columnIndex){
+  switch (columnIndex) {
     case 0: property = 'name'; break;
     case 1: property = 'email'; break;
     case 2: property = 'is_admin'; break;
     default: return;
   }
 
-  const sortedUsers=[...users];
-
-  sortedUsers.sort((a,b) =>{
-    let aVal = a[property];
-    let bVal = b[property];
-
-    if(property === 'is_admin'){
-      aVal=aVal===1?1:0;
-      bVal=bVal===1?1:0;
-      return newDir === 'asc' ? aVal-bVal:bVal-aVal;
-    }else{
-      const aStr = String(aVal);
-      const bStr = String(bVal);
+  const sortedUsers = [...users];
+  sortedUsers.sort((a, b) => {
+    if (property === 'is_admin') {
+      const aAdmin = a.is_admin === 1 ? 1 : 0;
+      const bAdmin = b.is_admin === 1 ? 1 : 0;
+      return newDir === 'asc' ? aAdmin - bAdmin : bAdmin - aAdmin;
+    } else {
+      const aVal = String(a[property]).toUpperCase();
+      const bVal = String(b[property]).toUpperCase();
       if (newDir === 'asc') {
-        return aStr.localeCompare(bStr, undefined, { sensitivity: 'base' });
+        if (aVal < bVal) return -1;
+        if (aVal > bVal) return 1;
+        return 0;
       } else {
-        return bStr.localeCompare(aStr, undefined, { sensitivity: 'base' });
+        if (aVal > bVal) return -1;
+        if (aVal < bVal) return 1;
+        return 0;
       }
     }
   });
-  users=sortedUsers;
-  th.setAttribute('data-sort-dir',newDir);
 
+  users = sortedUsers;
+  th.setAttribute('data-sort-dir', newDir);
   renderTable(users);
 }
 
