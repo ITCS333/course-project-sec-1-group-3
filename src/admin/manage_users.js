@@ -127,13 +127,22 @@ function handleChangePassword(event) {
   const newPassword = document.getElementById('new-password').value;
   const confirmPassword = document.getElementById('confirm-password').value;
 
+
+    const clearFields = function() {
+    document.getElementById('current-password').value = '';
+    document.getElementById('new-password').value = '';
+    document.getElementById('confirm-password').value = '';
+  };
+
   if(newPassword !== confirmPassword){
     alert('Passwords do not match.');
+    clearFields();
     return;
   }
   
   if(newPassword.length < 8){
     alert('Password must be at least 8 characters.');
+    clearFields();
     return;
   }
 
@@ -144,6 +153,7 @@ function handleChangePassword(event) {
 
   if (!adminId) {
     alert('You must be logged in as admin.');
+    clearFields();
     return;
   }
 
@@ -163,17 +173,13 @@ function handleChangePassword(event) {
    } else {
       alert(data.message || 'Failed to update password.');
    }
-   document.getElementById('current-password').value = '';
-   document.getElementById('new-password').value = '';
-   document.getElementById('confirm-password').value = '';
+   clearFields();
   })
 
   .catch(error => {
    console.error('Error:', error);
    alert('An error occurred. Please try again.');
-   document.getElementById('current-password').value = '';
-   document.getElementById('new-password').value = '';
-   document.getElementById('confirm-password').value = '';
+   clearFields();
   });
 }
 
