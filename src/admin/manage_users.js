@@ -122,6 +122,7 @@ function renderTable(userArray) {
  */
 function handleChangePassword(event) {
   // ... your implementation here ...
+  event.preventDefault();
   const currentPassword = document.getElementById('current-password').value;
   const newPassword = document.getElementById('new-password').value;
   const confirmPassword = document.getElementById('confirm-password').value;
@@ -375,7 +376,9 @@ function handleSort(event) {
     default: return;
   }
 
-  users.sort((a,b) =>{
+  const sortedUsers=[...users];
+
+  sortedUsers.sort((a,b) =>{
     let aVal = a[property];
     let bVal = b[property];
 
@@ -388,7 +391,7 @@ function handleSort(event) {
       ?String(aVal).localeCompare(String(bVal)) : String(bVal).localeCompare(String(aVal));
     }
   });
-  
+  users=sortedUsers;
   th.setAttribute('data-sort-dir',newDir);
 
   renderTable(users);

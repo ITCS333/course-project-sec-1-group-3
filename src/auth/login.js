@@ -109,10 +109,35 @@ function handleLogin(event) {
     return;
   }
 
-  displayMessage("Login successful!", "success")
 
-  emailInput.value="";
-  passwordInput.value="";
+  const users = [
+    { id: 1, email: "admin@uob.edu.bh", password: "password", is_admin: 1 },
+    { id: 2, email: "202101234@stu.uob.edu.bh", password: "password", is_admin: 0 }
+  ];
+
+  const foundUser = users.find(u => u.email === email && u.password === password);
+
+  if (!foundUser) {
+    displayMessage("Invalid email or password.", "error");
+    return;
+  }
+
+  localStorage.setItem("userId", foundUser.id);
+  localStorage.setItem("isAdmin", foundUser.is_admin);
+
+  displayMessage("Login successful! Redirecting...", "success");
+
+  setTimeout(() => {
+    if (foundUser.is_admin === 1) {
+      window.location.href = "../admin/manage_users.html";
+    } else {
+      window.location.href = "../../index.html";
+    }
+  }, 1000);
+
+
+
+
 }
 
 /**
