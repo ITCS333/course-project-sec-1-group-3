@@ -166,10 +166,18 @@ function handleChangePassword(event) {
     }else{
       alert(data.message || 'Failed to update password.');
     }
+
+    currentInput.value = '';
+    newInput.value = '';
+    confirmInput.value = '';
   })
   .catch(error => {
     console.error('Error:', error);
     alert('An error occurred. Please try again.')
+
+    currentInput.value = '';
+    newInput.value = '';
+    confirmInput.value = '';
   });
 }
 
@@ -391,16 +399,12 @@ function handleSort(event) {
       bVal=bVal===1?1:0;
       return newDir === 'asc' ? aVal-bVal:bVal-aVal;
     }else{
-      const aStr = String(aVal).toLowerCase();
-      const bStr = String(bVal).toLowerCase();
+      const aStr = String(aVal);
+      const bStr = String(bVal);
       if (newDir === 'asc') {
-        if (aStr < bStr) return -1;
-        if (aStr > bStr) return 1;
-        return 0;
+        return aStr.localeCompare(bStr, undefined, { sensitivity: 'base' });
       } else {
-        if (aStr > bStr) return -1;
-        if (aStr < bStr) return 1;
-        return 0;
+        return bStr.localeCompare(aStr, undefined, { sensitivity: 'base' });
       }
     }
   });
