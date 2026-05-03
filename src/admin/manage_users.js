@@ -137,8 +137,12 @@ function handleChangePassword(event) {
     return;
   }
 
-  const adminId = localStorage.getItem('userId');
-  if(!adminId){
+  let adminId = null;
+  if (typeof localStorage !== 'undefined') {
+    adminId = localStorage.getItem('userId');
+  }
+
+  if (!adminId) {
     alert('You must be logged in as admin.');
     return;
   }
@@ -387,8 +391,17 @@ function handleSort(event) {
       bVal=bVal===1?1:0;
       return newDir === 'asc' ? aVal-bVal:bVal-aVal;
     }else{
-      return newDir === 'asc'
-      ?String(aVal).localeCompare(String(bVal)) : String(bVal).localeCompare(String(aVal));
+      const aStr = String(aVal).toLowerCase();
+      const bStr = String(bVal).toLowerCase();
+      if (newDir === 'asc') {
+        if (aStr < bStr) return -1;
+        if (aStr > bStr) return 1;
+        return 0;
+      } else {
+        if (aStr > bStr) return -1;
+        if (aStr < bStr) return 1;
+        return 0;
+      }
     }
   });
   users=sortedUsers;
