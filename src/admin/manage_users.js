@@ -200,7 +200,7 @@ function handleChangePassword(event) {
  * 6. Clear the form inputs on success.
  * 7. On failure, show the error message returned by the API.
  */
-function handleAddUser(event) {
+ async function handleAddUser(event) {
   // ... your implementation here ...
   event.preventDefault();
 
@@ -217,37 +217,34 @@ function handleAddUser(event) {
     alert('Password must be at least 8 characters.');
     return;
   }
+  try {
+    const response = await fetch('../api/index.php', {
+      method: 'POST',
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify({
+        name: name,
+        email: email,
+        password: password,
+        is_admin: parseInt(isAdmin)
+      })
+    });
 
-  fetch('../api/index.php',{
-    method: 'POST',
-    headers: {'Content-Type':'application/json'},
-    body:JSON.stringify({
-      name:name,
-      email:email,
-      password:password,
-      is_admin: parseInt(isAdmin)
-    })
-  })
-  .then(response=>response.json())
-  .then(data=>{
-    if(data.success || response.status ===201){
+    const data = await response.json();
+
+ if(data.success || response.status === 201){
       alert('User added successfully!');
-
-      document.getElementById('user-name').value='';
-      document.getElementById('user-email').value='';
-      document.getElementById('default-password').value='';
-      document.getElementById('is-admin').value='0';
-
+      document.getElementById('user-name').value = '';
+      document.getElementById('user-email').value = '';
+      document.getElementById('default-password').value = '';
+      document.getElementById('is-admin').value = '0';
       loadUsersAndInitialize();
-    }else{
+    } else {
       alert(data.message || 'Failed to add user');
     }
-  })
-
-  .catch(error=>{
-    console.error('Error:',error);
+  } catch(error) {
+    console.error('Error:', error);
     alert('An error occurred. Please try again.');
-  });
+  }
 }
 
 
