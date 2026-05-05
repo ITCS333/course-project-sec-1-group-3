@@ -387,28 +387,18 @@ function handleSort(event) {
     default: return;
   }
 
-  const sortedUsers = [...users];
-  sortedUsers.sort((a, b) => {
+  users.sort((a, b) => {
     if (property === 'is_admin') {
       const aAdmin = a.is_admin === 1 ? 1 : 0;
       const bAdmin = b.is_admin === 1 ? 1 : 0;
       return newDir === 'asc' ? aAdmin - bAdmin : bAdmin - aAdmin;
     } else {
-      const aVal = String(a[property]).toUpperCase();
-      const bVal = String(b[property]).toUpperCase();
-      if (newDir === 'asc') {
-        if (aVal < bVal) return -1;
-        if (aVal > bVal) return 1;
-        return 0;
-      } else {
-        if (aVal > bVal) return -1;
-        if (aVal < bVal) return 1;
-        return 0;
-      }
+      return newDir === 'asc'
+        ? a[property].localeCompare(b[property])
+        : b[property].localeCompare(a[property]);
     }
   });
 
-  users = sortedUsers;
   th.setAttribute('data-sort-dir', newDir);
   renderTable(users);
 }
@@ -448,20 +438,20 @@ async function loadUsersAndInitialize() {
     }
 
     if(changePasswordForm){
-      changePasswordForm.addEventListener('submit',handleChangePassword);
+      changePasswordForm.addEventListener('submit',handleChangePassword , {once:true});
     }
     if(addUserForm){
-      addUserForm.addEventListener('submit',handleAddUser);
+      addUserForm.addEventListener('submit',handleAddUser , {once:true});
     }
     if(userTableBody){
       userTableBody.addEventListener('click',handleTableClick);
     }
     if(searchInput){
-      searchInput.addEventListener('input',handleSearch);
+      searchInput.addEventListener('input',handleSearch, {once:true});
     }
     if(tableHeaders){
       tableHeaders.forEach(th=>{
-        th.addEventListener('click',handleSort);
+        th.addEventListener('click',handleSort, {once:true});
       });
     }
 
