@@ -376,7 +376,7 @@ function handleSort(event) {
   // ... your implementation here ...
   const th = event.currentTarget;
   const columnIndex = th.cellIndex;
-  const currentDir = th.getAttribute('data-sort-dir') || 'asc';
+  const currentDir = th.getAttribute('data-sort-dir') || 'desc';
   const newDir = currentDir === 'asc' ? 'desc' : 'asc';
 
   let property;
