@@ -420,6 +420,8 @@ function handleSort(event) {
  *    - "input"  on searchInput         -> handleSearch
  *    - "click"  on each th in tableHeaders -> handleSort
  */
+
+let listenersAttached = false;
 async function loadUsersAndInitialize() {
   // ... your implementation here ...
   try{
@@ -437,23 +439,27 @@ async function loadUsersAndInitialize() {
       alert('Failed to load users. Please refresh the page.');
     }
 
+    
+if (!listenersAttached) {
     if(changePasswordForm){
-      changePasswordForm.addEventListener('submit',handleChangePassword , {once:true});
+      changePasswordForm.addEventListener('submit',handleChangePassword);
     }
     if(addUserForm){
-      addUserForm.addEventListener('submit',handleAddUser , {once:true});
+      addUserForm.addEventListener('submit',handleAddUser);
     }
     if(userTableBody){
       userTableBody.addEventListener('click',handleTableClick);
     }
     if(searchInput){
-      searchInput.addEventListener('input',handleSearch, {once:true});
+      searchInput.addEventListener('input',handleSearch);
     }
     if(tableHeaders){
       tableHeaders.forEach(th=>{
-        th.addEventListener('click',handleSort, {once:true});
+        th.addEventListener('click',handleSort);
       });
     }
+    listenersAttached = true;
+  }
 
 
   }catch(error){
@@ -461,6 +467,7 @@ async function loadUsersAndInitialize() {
     alert('Failed to load users. Please check your connection and refresh the page.');
   }
 }
+
 
 // --- Initial Page Load ---
 loadUsersAndInitialize();
