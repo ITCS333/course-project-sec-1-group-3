@@ -454,6 +454,9 @@ try {
     } elseif ($method === 'DELETE') {
         // TODO: Read the 'id' query parameter.
         // TODO: Call deleteUser($db, $id).
+        if (!$id && isset($data['id'])){
+            $id = (int)$data['id'];
+        }
         deleteUser($db, $id);
 
     } else {
