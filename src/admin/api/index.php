@@ -354,8 +354,7 @@ function deleteUser($db, $id) {
     // TODO: If successful, call sendResponse() with a success message and HTTP 200.
     //       If the query fails, call sendResponse() with HTTP 500.
     if ($stmt->execute()){
-      echo json_encode(['success' => true, 'message' => 'User deleted successfully']);
-      exit();
+        sendResponse('User deleted successfully', 200);
     }else{
         sendResponse('Failed to delete user', 500);
     }
