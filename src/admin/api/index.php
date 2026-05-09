@@ -69,8 +69,7 @@ $method = $_SERVER['REQUEST_METHOD'];
 $raw = file_get_contents('php://input');
 $data = json_decode($raw,true);
 if (!is_array($data)) {
-    parse_str($raw, $parsedData);
-    $data = is_array($parsedData) ? $parsedData : [];
+    $data = [];
 }
 
 // TODO: Read query string parameters.
@@ -458,12 +457,6 @@ try {
     } elseif ($method === 'DELETE') {
         // TODO: Read the 'id' query parameter.
         // TODO: Call deleteUser($db, $id).
-        if (!$id && isset($_REQUEST['id'])) {
-        $id = (int)$_REQUEST['id'];
-        }
-        if (!$id && isset($data['id'])){
-            $id = (int)$data['id'];
-        }
         deleteUser($db, $id);
 
     } else {
