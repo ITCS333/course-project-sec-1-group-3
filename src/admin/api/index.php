@@ -113,9 +113,8 @@ function getUsers($db , $search=null, $sort=null, $order='asc') {
     //       WHERE name LIKE :search OR email LIKE :search
     //       Wrap the search term with '%' wildcards when binding.
     if ($search && !empty($search)){
-        $sql .= " WHERE name LIKE :search_name OR email LIKE :search_email";
-        $params[':search_name'] = '%' . $search . '%';
-        $params[':search_email'] = '%' . $search . '%';
+        $sql .= " WHERE name LIKE :search";
+        $params[':search'] = '%' . $search . '%';
     }
 
     
