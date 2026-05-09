@@ -113,10 +113,12 @@ function getUsers($db , $search=null, $sort=null, $order='asc') {
     //       WHERE name LIKE :search OR email LIKE :search
     //       Wrap the search term with '%' wildcards when binding.
     if ($search && !empty($search)){
-        $sql .= " WHERE name LIKE :search";
-        $params[':search'] = '%' . $search . '%';
-
+        $sql .= " WHERE name LIKE :search_name OR email LIKE :search_email";
+        $params[':search_name'] = '%' . $search . '%';
+        $params[':search_email'] = '%' . $search . '%';
     }
+
+    
 
     // TODO: If the 'sort' query parameter is present and is one of the allowed
     //       fields (name, email, is_admin), append an ORDER BY clause.
