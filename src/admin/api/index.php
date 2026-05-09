@@ -457,7 +457,9 @@ try {
     } elseif ($method === 'DELETE') {
         // TODO: Read the 'id' query parameter.
         // TODO: Call deleteUser($db, $id).
-        deleteUser($db, $id);
+        $deleteId = $id ?? ($data['id'] ?? null);
+        if ($deleteId) $deleteId = (int)$deleteId;
+        deleteUser($db, $deleteId);
 
     } else {
         // TODO: Return HTTP 405 (Method Not Allowed) with a JSON error message.
