@@ -1,6 +1,5 @@
 /*
   Requirement: Populate the single topic page and manage replies.
-
   Instructions:
   1. This file is already linked to `topic.html` via:
          <script src="topic.js" defer></script>
