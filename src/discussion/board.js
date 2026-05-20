@@ -4,7 +4,6 @@
   Instructions:
   1. This file is already linked to `board.html` via:
          <script src="board.js" defer></script>
-
   2. In `board.html`:
      - The new-topic form has id="new-topic-form".
      - The topic list container has id="topic-list-container".
