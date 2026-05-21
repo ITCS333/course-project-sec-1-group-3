@@ -13,7 +13,7 @@ The website covers five functional areas, each assigned to one team member.
 
 ## Live Demo
 
-> **Replit Deployment:** (https://course-project-sec-1-group-3--tawfiqal-zaidan.replit.app/src/auth/login.html)
+> **Replit Deployment:** https://course-project-sec-1-group-3--tawfiqal-zaidan.replit.app/src/auth/login.html
 
 ---
 
