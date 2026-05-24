@@ -21,7 +21,7 @@ The website covers five functional areas, each assigned to one team member.
 
 | Task | Description | Student ID | GitHub Username |
 |------|-------------|------------|-----------------|
-| 1 | Home Page, Authentication & User Management | 202308093| |
+| 1 | Home Page, Authentication & User Management | 202308093| iali-alshehabi |
 | 2 | Course Resources |202303159 | |
 | 3 | Weekly Breakdown | 202210158| The-Tifo|
 | 4 | Assignments | 202205379| |
